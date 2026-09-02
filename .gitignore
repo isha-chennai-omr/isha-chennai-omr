@@ -1,0 +1,27 @@
+# Environment variables
+.env.local
+.env.development
+.env.production
+
+# Dependencies
+node_modules/
+bun.lock
+
+# Build output
+dist/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+.firebaserc
+functions/node_modules/
