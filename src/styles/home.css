@@ -170,10 +170,15 @@
   font-size: 1.35rem;
 }
 
-.program-card p {
+.program-description {
   margin: 0 0 16px;
   color: var(--muted);
   line-height: 1.6;
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
 }
 
 .program-card a {

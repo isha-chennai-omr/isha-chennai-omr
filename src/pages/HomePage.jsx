@@ -62,7 +62,7 @@ export function HomePage() {
                 <>
                   <time dateTime={program.startDate || program.date}>{formatProgramSchedule(program)}</time>
                   <h3>{program.name}</h3>
-                  {program.description && <p>{program.description}</p>}
+                  {program.description && <p className="program-description">{program.description.trim()}</p>}
                   {program.destination && <span className="program-card-action">Learn more</span>}
                 </>
               );
