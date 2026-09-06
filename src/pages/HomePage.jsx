@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -16,12 +15,6 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: "1-click", label: "link generation" },
-  { value: "8 MB", label: "image limit" },
-  { value: "JPG/PNG/WebP", label: "supported formats" },
-];
-
 export function HomePage() {
   return (
     <main className="home-shell">
@@ -34,21 +27,9 @@ export function HomePage() {
           </p>
 
           <div className="home-actions">
-            <Link to="/link_generator" className="primary-btn">
-              Create Link
-            </Link>
             <a href="#features" className="secondary-btn">
               Explore
             </a>
-          </div>
-
-          <div className="home-stats">
-            {stats.map((stat) => (
-              <div key={stat.label} className="home-stat">
-                <strong>{stat.value}</strong>
-                <span>{stat.label}</span>
-              </div>
-            ))}
           </div>
         </div>
 

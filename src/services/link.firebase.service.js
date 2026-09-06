@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, serverTimestamp, writeBatch } from "firebase/firestore";
 import { db } from "../firebase";
 
 import commonUtil from "../utils/common-util";
@@ -98,6 +98,101 @@ export class LinkFirebaseService {
       }
 
       return { success: false, url: null, error: err.message || "Something went wrong." };
+    }
+  }
+
+  async getLink(slug) {
+    const clean = String(slug || "").trim();
+
+    try {
+      const snapshot = await getDoc(doc(this.db, this.linkCollection, clean));
+      if (!snapshot.exists()) {
+        return { success: false, link: null, imageData: "", error: "Link not found." };
+      }
+
+      const link = snapshot.data();
+      let imageData = "";
+      if (link.imageRef) {
+        const imageSnapshot = await getDoc(doc(this.db, this.imageCollection, link.imageRef));
+        imageData = imageSnapshot.exists() ? imageSnapshot.data().imageData || "" : "";
+      }
+
+      return { success: true, link, imageData, error: null };
+    } catch (err) {
+      return { success: false, link: null, imageData: "", error: err.message || "Failed to load link." };
+    }
+  }
+
+  async listLinks() {
+    try {
+      const snapshot = await getDocs(collection(this.db, this.linkCollection));
+      const links = snapshot.docs.map((linkSnapshot) => ({
+        id: linkSnapshot.id,
+        ...linkSnapshot.data(),
+      }));
+      links.sort((first, second) => String(first.name || first.id).localeCompare(String(second.name || second.id)));
+      return { success: true, links, error: null };
+    } catch (err) {
+      return { success: false, links: [], error: err.message || "Failed to load links." };
+    }
+  }
+
+  async updateLink({ slug, name, landingUrl, file }) {
+    const clean = String(slug || "").trim();
+    const newName = String(name || "").trim();
+    const target = commonUtil.validateUrl(landingUrl);
+
+    if (!commonUtil.slugIsValid(newName)) {
+      return { success: false, error: "Use 3–64 characters: letters, numbers, _ or -." };
+    }
+
+    if (!target) {
+      return { success: false, error: "Enter a valid http/https landing URL." };
+    }
+
+    try {
+      const linkRef = doc(this.db, this.linkCollection, clean);
+      const existing = await getDoc(linkRef);
+      if (!existing.exists()) {
+        return { success: false, error: "Link not found." };
+      }
+
+      const link = existing.data();
+      const batch = writeBatch(this.db);
+      const newLinkRef = doc(this.db, this.linkCollection, newName);
+      if (newName !== clean && (await getDoc(newLinkRef)).exists()) {
+        return { success: false, error: "That new link ending is already in use." };
+      }
+      const changes = {
+        link: target.toString(),
+        name: newName,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (file) {
+        const { dataUrl: imageData, error: imageError } = await fileUtil.createFirestoreImage(file);
+        if (imageError) return { success: false, error: imageError };
+
+        const imageRef = doc(this.db, this.imageCollection, link.imageRef || clean);
+        batch.set(
+          imageRef,
+          {
+            name: file.name,
+            imageData,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+        changes.imageRef = imageRef.id;
+      }
+
+      batch.set(newLinkRef, { ...link, ...changes }, { merge: true });
+      if (newName !== clean) batch.delete(linkRef);
+      await batch.commit();
+      return { success: true, error: null };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message || "Failed to update link." };
     }
   }
 }
