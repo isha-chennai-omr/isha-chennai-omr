@@ -16,7 +16,7 @@ function esc(value) {
 exports.linkPreview = onRequest(
   { region: "asia-south1", cors: false },
   async (req, res) => {
-    const match = req.path.match(/^\\/p\\/([^/]+)\\/?$/);
+    const match = req.path.match(/^\/p\/([^/]+)\/?$/);
     if (!match) return res.status(404).send("Not found");
 
     const slug = decodeURIComponent(match[1]);

@@ -86,6 +86,10 @@ export class LinkFirebaseService {
     } catch (err) {
       console.error(err);
 
+      if (err?.code === "storage/bucket-not-found" || err?.code === "storage/unknown") {
+        return { success: false, url: null, error: "Firebase Storage is not enabled for this project. Enable Storage in the Firebase Console and try again." };
+      }
+
       if (err?.code === "unavailable" || /offline/i.test(err?.message || "")) {
         return { success: false, url: null, error: this.offlineMessage() };
       }

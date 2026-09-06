@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "firebase:deploy": "bunx run build && firebase deploy"
+    "firebase:deploy": "bun run build && firebase deploy --only firestore,storage,hosting"
   },
   "dependencies": {
     "firebase": "^12.18.0",
