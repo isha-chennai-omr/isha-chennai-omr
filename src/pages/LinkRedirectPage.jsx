@@ -42,7 +42,7 @@ export function LinkRedirectPage() {
         if (active) {
           setImageUrl(imageData);
           setMessage("Opening link...");
-          document.title = link.title || "Link Preview";
+          document.title = link.name || "Link Preview";
         }
 
         window.setTimeout(
