@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
 import commonUtil from "../utils/common-util";
@@ -9,16 +9,28 @@ class ProgramFirebaseService {
   async listPrograms() {
     try {
       const snapshot = await getDocs(collection(db, programCollection));
-      const programs = snapshot.docs
-        .map((programSnapshot) => ({ id: programSnapshot.id, ...programSnapshot.data() }))
-        .sort((first, second) => String(first.startDate || first.date || "").localeCompare(String(second.startDate || second.date || "")));
+      const programs = await Promise.all(
+        snapshot.docs.map(async (programSnapshot) => {
+          const program = { id: programSnapshot.id, ...programSnapshot.data() };
+          if (!program.link && program.linkRef) {
+            const linkSnapshot = await getDoc(doc(db, "link-ref", program.linkRef));
+            program.destination = linkSnapshot.exists() ? linkSnapshot.data().link || "" : "";
+          } else {
+            program.destination = program.link || "";
+          }
+          return program;
+        }),
+      );
+      programs.sort((first, second) =>
+        String(first.startDate || first.date || "").localeCompare(String(second.startDate || second.date || "")),
+      );
       return { success: true, programs, error: null };
     } catch (error) {
       return { success: false, programs: [], error: error.message || "Unable to load programs." };
     }
   }
 
-  async createProgram({ name, startDate, endDate, startTime, endTime, description, link }) {
+  async createProgram({ name, startDate, endDate, startTime, endTime, description, link, linkRef }) {
     const cleanName = String(name || "").trim();
     const cleanStartDate = String(startDate || "").trim();
     const cleanEndDate = String(endDate || "").trim();
@@ -26,6 +38,7 @@ class ProgramFirebaseService {
     const cleanEndTime = String(endTime || "").trim();
     const cleanDescription = String(description || "").trim();
     const cleanLink = String(link || "").trim();
+    const cleanLinkRef = String(linkRef || "").trim();
 
     if (!cleanName) return { success: false, error: "Enter a program name." };
     if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanStartDate) || !/^\d{4}-\d{2}-\d{2}$/.test(cleanEndDate))
@@ -36,6 +49,7 @@ class ProgramFirebaseService {
     if (cleanEndDate === cleanStartDate && cleanEndTime < cleanStartTime)
       return { success: false, error: "End time must be after the start time." };
     if (cleanLink && !commonUtil.validateUrl(cleanLink)) return { success: false, error: "Enter a valid http/https program link." };
+    if (cleanLinkRef && !commonUtil.slugIsValid(cleanLinkRef)) return { success: false, error: "Enter a valid linked link ending." };
 
     try {
       const reference = await addDoc(collection(db, programCollection), {
@@ -46,6 +60,7 @@ class ProgramFirebaseService {
         endTime: cleanEndTime,
         description: cleanDescription,
         link: cleanLink,
+        linkRef: cleanLinkRef,
         createdAt: serverTimestamp(),
       });
       return { success: true, id: reference.id, error: null };

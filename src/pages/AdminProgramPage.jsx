@@ -12,6 +12,7 @@ export function AdminProgramPage() {
   const [endTime, setEndTime] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
+  const [linkRef, setLinkRef] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -19,7 +20,7 @@ export function AdminProgramPage() {
     event.preventDefault();
     setBusy(true);
     setStatus("");
-    const result = await programFirebaseService.createProgram({ name, startDate, endDate, startTime, endTime, description, link });
+    const result = await programFirebaseService.createProgram({ name, startDate, endDate, startTime, endTime, description, link, linkRef });
     setBusy(false);
 
     if (!result.success) {
@@ -81,6 +82,14 @@ export function AdminProgramPage() {
           value={link}
           onChange={(event) => setLink(event.target.value)}
           placeholder="https://isha.sadhguru.org"
+        />
+
+        <label htmlFor="program-link-ref">Linked link ending (optional)</label>
+        <input
+          id="program-link-ref"
+          value={linkRef}
+          onChange={(event) => setLinkRef(event.target.value.replace(/\s/g, "_"))}
+          placeholder="OMR_SEP_Satsang"
         />
 
         <button className="generate" type="submit" disabled={busy}>

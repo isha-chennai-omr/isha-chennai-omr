@@ -57,18 +57,24 @@ export function HomePage() {
             <h2>Programs and gatherings</h2>
           </div>
           <div className="program-grid">
-            {programs.map((program) => (
-              <article className="program-card" key={program.id}>
-                <time dateTime={program.startDate || program.date}>{formatProgramSchedule(program)}</time>
-                <h3>{program.name}</h3>
-                {program.description && <p>{program.description}</p>}
-                {program.link && (
-                  <a href={program.link} target="_blank" rel="noreferrer">
-                    Learn more
+            {programs.map((program) => {
+              const content = (
+                <>
+                  <time dateTime={program.startDate || program.date}>{formatProgramSchedule(program)}</time>
+                  <h3>{program.name}</h3>
+                  {program.description && <p>{program.description}</p>}
+                  {program.destination && <span className="program-card-action">Learn more</span>}
+                </>
+              );
+
+              return program.destination ?
+                  <a className="program-card" href={program.destination} target="_blank" rel="noreferrer" key={program.id}>
+                    {content}
                   </a>
-                )}
-              </article>
-            ))}
+                : <article className="program-card" key={program.id}>
+                    {content}
+                  </article>;
+            })}
           </div>
         </section>
       )}
