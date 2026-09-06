@@ -5,6 +5,8 @@ import { LinkRedirectPage } from "./pages/LinkRedirectPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AdminLinkPage } from "./pages/AdminLinkPage";
 import { AdminLayout } from "./pages/AdminLayout";
+import { AdminProgramsPage } from "./pages/AdminProgramsPage";
+import { AdminProgramPage } from "./pages/AdminProgramPage";
 
 export function App() {
   return (
@@ -17,6 +19,8 @@ export function App() {
           <Route path="links" element={<AdminPage />} />
           <Route path="link" element={<AdminLinkPage />} />
           <Route path="link/:slug" element={<AdminLinkPage />} />
+          <Route path="programs" element={<AdminProgramsPage />} />
+          <Route path="program" element={<AdminProgramPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -10,7 +10,7 @@ export function AdminLayout() {
         </div>
         <nav className="admin-tabs" aria-label="Admin sections">
           <NavLink to="/admin/links">Links</NavLink>
-          <NavLink to="/admin/link">New link</NavLink>
+          <NavLink to="/admin/programs">Programs</NavLink>
         </nav>
       </header>
       <Outlet />

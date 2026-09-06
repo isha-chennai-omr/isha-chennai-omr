@@ -129,39 +129,54 @@
   line-height: 1.6;
 }
 
-.home-features {
+.programs-section {
   max-width: 1200px;
-  margin: 40px auto 0;
+  margin: 42px auto 0;
+}
+
+.programs-heading h2 {
+  margin: 0 0 18px;
+  font-size: 2rem;
+  color: var(--coffee);
+}
+
+.program-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 18px;
 }
-.feature-card {
-  background: rgba(255, 255, 255, 0.58);
+
+.program-card {
+  padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 24px 22px;
-  box-shadow: 0 18px 38px rgba(55, 38, 26, 0.04);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 14px 30px rgba(55, 38, 26, 0.06);
 }
-.feature-icon {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: rgba(184, 138, 82, 0.12);
+
+.program-card time {
   color: var(--earth);
-  font-size: 20px;
-  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-.feature-card h3 {
-  margin: 0 0 10px;
-  font-size: 1.25rem;
+
+.program-card h3 {
+  margin: 12px 0 8px;
+  color: var(--coffee);
+  font-size: 1.35rem;
 }
-.feature-card p {
-  margin: 0;
-  line-height: 1.7;
+
+.program-card p {
+  margin: 0 0 16px;
   color: var(--muted);
+  line-height: 1.6;
+}
+
+.program-card a {
+  color: var(--earth);
+  font-weight: 700;
 }
 
 @media (max-width: 900px) {
@@ -173,7 +188,7 @@
   .home-copy h1 {
     max-width: 100%;
   }
-  .home-features {
+  .program-grid {
     grid-template-columns: 1fr;
   }
 }

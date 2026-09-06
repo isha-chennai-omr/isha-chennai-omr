@@ -1,21 +1,31 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
-const features = [
-  {
-    title: "Elevated event links",
-    text: "Create polished, shareable preview links for satsangs, events, and community moments.",
-  },
-  {
-    title: "Instant social preview",
-    text: "Upload an image and generate a clean link that presents beautifully before the destination opens.",
-  },
-  {
-    title: "Built for community",
-    text: "Designed for Isha-inspired communication with warm visuals, simple flow, and a calm, focused experience.",
-  },
-];
+import programFirebaseService from "../services/program.firebase.service";
+
+function formatProgramDate(date) {
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(`${date}T00:00:00`));
+}
+
+function formatProgramSchedule(program) {
+  const startDate = program.startDate || program.date;
+  const endDate = program.endDate || startDate;
+  const start = `${formatProgramDate(startDate)}${program.startTime ? `, ${program.startTime}` : ""}`;
+  const end = `${formatProgramDate(endDate)}${program.endTime ? `, ${program.endTime}` : ""}`;
+  return start === end ? start : `${start} - ${end}`;
+}
 
 export function HomePage() {
+  const [programs, setPrograms] = useState([]);
+
+  useEffect(() => {
+    programFirebaseService.listPrograms().then((result) => {
+      if (result.success) {
+        const today = new Date().toISOString().slice(0, 10);
+        setPrograms(result.programs.filter((program) => (program.endDate || program.date || program.startDate) >= today));
+      }
+    });
+  }, []);
+
   return (
     <main className="home-shell">
       <section className="home-hero">
@@ -25,12 +35,6 @@ export function HomePage() {
           <p className="home-subtitle">
             Create thoughtful event links that open with an image preview, a clear message, and a spiritual sense of presence.
           </p>
-
-          <div className="home-actions">
-            <a href="#features" className="secondary-btn">
-              Explore
-            </a>
-          </div>
         </div>
 
         <div className="home-visual" aria-label="Preview card illustration">
@@ -46,15 +50,28 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="features" className="home-features">
-        {features.map((feature) => (
-          <article key={feature.title} className="feature-card">
-            <div className="feature-icon">✦</div>
-            <h3>{feature.title}</h3>
-            <p>{feature.text}</p>
-          </article>
-        ))}
-      </section>
+      {programs.length > 0 && (
+        <section className="programs-section">
+          <div className="programs-heading">
+            <p className="home-kicker">UPCOMING</p>
+            <h2>Programs and gatherings</h2>
+          </div>
+          <div className="program-grid">
+            {programs.map((program) => (
+              <article className="program-card" key={program.id}>
+                <time dateTime={program.startDate || program.date}>{formatProgramSchedule(program)}</time>
+                <h3>{program.name}</h3>
+                {program.description && <p>{program.description}</p>}
+                {program.link && (
+                  <a href={program.link} target="_blank" rel="noreferrer">
+                    Learn more
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
