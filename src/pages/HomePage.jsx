@@ -14,14 +14,21 @@ function formatProgramSchedule(program) {
   return start === end ? start : `${start} - ${end}`;
 }
 
+function isUpcomingProgram(program) {
+  const startDate = program.startDate || program.date;
+  if (!startDate) return false;
+
+  const startTime = program.startTime || "00:00";
+  return new Date(`${startDate}T${startTime}:00`) > new Date();
+}
+
 export function HomePage() {
   const [programs, setPrograms] = useState([]);
 
   useEffect(() => {
     programFirebaseService.listPrograms().then((result) => {
       if (result.success) {
-        const today = new Date().toISOString().slice(0, 10);
-        setPrograms(result.programs.filter((program) => (program.endDate || program.date || program.startDate) >= today));
+        setPrograms(result.programs.filter(isUpcomingProgram));
       }
     });
   }, []);
