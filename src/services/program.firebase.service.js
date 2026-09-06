@@ -13,7 +13,7 @@ class ProgramFirebaseService {
         snapshot.docs.map(async (programSnapshot) => {
           const program = { id: programSnapshot.id, ...programSnapshot.data() };
           if (!program.link && program.linkRef) {
-            const linkSnapshot = await getDoc(doc(db, "link-ref", program.linkRef));
+            const linkSnapshot = await getDoc(doc(db, "links", program.linkRef));
             program.destination = linkSnapshot.exists() ? linkSnapshot.data().link || "" : "";
           } else {
             program.destination = program.link || "";

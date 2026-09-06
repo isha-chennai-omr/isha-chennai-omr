@@ -7,8 +7,8 @@ import fileUtil from "../utils/file-util";
 export class LinkFirebaseService {
   constructor() {
     this.db = db;
-    this.linkCollection = "link-ref";
-    this.imageCollection = "image-ref";
+    this.linkCollection = "links";
+    this.imageCollection = "images";
   }
 
   offlineMessage() {

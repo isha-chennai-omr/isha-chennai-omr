@@ -16,7 +16,7 @@ export function LinkRedirectPage() {
     async function loadLink() {
       try {
         const cleanSlug = decodeURIComponent(slug || "");
-        let snapshot = await getDoc(doc(db, "link-ref", cleanSlug));
+        let snapshot = await getDoc(doc(db, "links", cleanSlug));
 
         if (!snapshot.exists()) {
           snapshot = await getDoc(doc(db, "links", cleanSlug));
@@ -32,7 +32,7 @@ export function LinkRedirectPage() {
         let imageData = link.imageData || link.imageUrl || "";
 
         if (link.imageRef) {
-          const imageSnapshot = await getDoc(doc(db, "image-ref", link.imageRef));
+          const imageSnapshot = await getDoc(doc(db, "images", link.imageRef));
           imageData = imageSnapshot.exists() ? imageSnapshot.data().imageData || "" : "";
         }
 
