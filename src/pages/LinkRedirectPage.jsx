@@ -13,7 +13,12 @@ export function LinkRedirectPage() {
 
     async function loadLink() {
       try {
-        const snapshot = await getDoc(doc(db, "links", decodeURIComponent(slug || "")));
+        const cleanSlug = decodeURIComponent(slug || "");
+        let snapshot = await getDoc(doc(db, "link-ref", cleanSlug));
+
+        if (!snapshot.exists()) {
+          snapshot = await getDoc(doc(db, "links", cleanSlug));
+        }
 
         if (!snapshot.exists()) {
           if (active) setMessage("Link not found.");
@@ -21,22 +26,30 @@ export function LinkRedirectPage() {
         }
 
         const link = snapshot.data();
-        if (!link.landingUrl) {
+        const landingUrl = link.link || link.landingUrl;
+        let imageData = link.imageData || link.imageUrl || "";
+
+        if (link.imageRef) {
+          const imageSnapshot = await getDoc(doc(db, "image-ref", link.imageRef));
+          imageData = imageSnapshot.exists() ? imageSnapshot.data().imageData || "" : "";
+        }
+
+        if (!landingUrl) {
           if (active) setMessage("This link has no destination.");
           return;
         }
 
         if (active) {
-          setImageUrl(link.imageUrl || "");
+          setImageUrl(imageData);
           setMessage("Opening link...");
           document.title = link.title || "Link Preview";
         }
 
         window.setTimeout(
           () => {
-            window.location.replace(link.landingUrl);
+            window.location.replace(landingUrl);
           },
-          link.imageUrl ? 1200 : 0,
+          imageData ? 1200 : 0,
         );
       } catch (error) {
         console.error(error);

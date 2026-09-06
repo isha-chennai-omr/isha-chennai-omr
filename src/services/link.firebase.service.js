@@ -1,6 +1,5 @@
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db, storage } from "../firebase";
+import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { db } from "../firebase";
 
 import commonUtil from "../utils/common-util";
 import fileUtil from "../utils/file-util";
@@ -8,8 +7,8 @@ import fileUtil from "../utils/file-util";
 export class LinkFirebaseService {
   constructor() {
     this.db = db;
-    this.storage = storage;
-    this.docName = "links";
+    this.linkCollection = "link-ref";
+    this.imageCollection = "image-ref";
   }
 
   offlineMessage() {
@@ -28,9 +27,10 @@ export class LinkFirebaseService {
     }
 
     try {
-      const snap = await getDoc(doc(this.db, this.docName, clean));
+      const snap = await getDoc(doc(this.db, this.linkCollection, clean));
+      const legacySnap = snap.exists() ? snap : await getDoc(doc(this.db, "links", clean));
 
-      if (snap.exists()) {
+      if (legacySnap.exists()) {
         return { available: false, error: "That link ending is already in use." };
       }
 
@@ -60,35 +60,38 @@ export class LinkFirebaseService {
     }
 
     try {
-      const linkRef = doc(this.db, this.docName, clean);
+      const linkRef = doc(this.db, this.linkCollection, clean);
       const existing = await getDoc(linkRef);
 
       if (existing.exists()) {
         return { success: false, url: null, error: "That link ending is already in use." };
       }
 
-      const safeName = fileUtil.sanitizeFilename(file.name);
-      const storageRef = ref(this.storage, `preview-images/${clean}/${Date.now()}-${safeName}`);
-      await uploadBytes(storageRef, file, { contentType: file.type });
-      const imageUrl = await getDownloadURL(storageRef);
+      const { dataUrl: imageData, error: imageError } = await fileUtil.createFirestoreImage(file);
+      if (imageError) {
+        return { success: false, url: null, error: imageError };
+      }
 
-      await setDoc(linkRef, {
-        slug: clean,
-        landingUrl,
-        imageUrl,
-        imagePath: storageRef.fullPath,
+      const imageRef = doc(this.db, this.imageCollection, clean);
+      const batch = writeBatch(this.db);
+      batch.set(imageRef, {
+        name: file.name,
+        imageData,
         createdAt: serverTimestamp(),
       });
+      batch.set(linkRef, {
+        link: landingUrl,
+        name: clean,
+        imageRef: imageRef.id,
+        createdAt: serverTimestamp(),
+      });
+      await batch.commit();
 
       const generatedUrl = `${window.location.origin}/p/${encodeURIComponent(clean)}`;
 
       return { success: true, url: generatedUrl, error: null };
     } catch (err) {
       console.error(err);
-
-      if (err?.code === "storage/bucket-not-found" || err?.code === "storage/unknown") {
-        return { success: false, url: null, error: "Firebase Storage is not enabled for this project. Enable Storage in the Firebase Console and try again." };
-      }
 
       if (err?.code === "unavailable" || /offline/i.test(err?.message || "")) {
         return { success: false, url: null, error: this.offlineMessage() };
