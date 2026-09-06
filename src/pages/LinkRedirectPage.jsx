@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
+import { Helmet } from "react-helmet-async";
 import { db } from "../firebase";
 
 export function LinkRedirectPage() {
   const { slug } = useParams();
   const [message, setMessage] = useState("Loading preview...");
   const [imageUrl, setImageUrl] = useState("");
+  const [linkName, setLinkName] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -41,8 +43,8 @@ export function LinkRedirectPage() {
 
         if (active) {
           setImageUrl(imageData);
+          setLinkName(link.name || cleanSlug);
           setMessage("Opening link...");
-          document.title = link.name || "Link Preview";
         }
 
         window.setTimeout(
@@ -65,6 +67,19 @@ export function LinkRedirectPage() {
 
   return (
     <main className="redirect-page">
+      {linkName && (
+        <Helmet>
+          <title>ISHA OMR - {linkName}</title>
+          <meta name="description" content={linkName} />
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={linkName} />
+          <meta property="og:description" content={linkName} />
+          {imageUrl && <meta property="og:image" content={imageUrl} />}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={linkName} />
+          {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+        </Helmet>
+      )}
       <section className="redirect-panel">
         {imageUrl && <img className="redirect-image" src={imageUrl} alt="Preview" />}
         <p>{message}</p>
