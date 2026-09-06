@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import programFirebaseService from "../services/program.firebase.service";
 
 export function AdminProgramPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const editing = Boolean(id);
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -16,11 +18,34 @@ export function AdminProgramPage() {
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (!editing) return;
+
+    setBusy(true);
+    programFirebaseService.getProgram(id).then((result) => {
+      setBusy(false);
+      if (!result.success) {
+        setStatus(result.error);
+        return;
+      }
+      const program = result.program;
+      setName(program.name || "");
+      setStartDate(program.startDate || program.date || "");
+      setEndDate(program.endDate || program.date || "");
+      setStartTime(program.startTime || "");
+      setEndTime(program.endTime || "");
+      setDescription(program.description || "");
+      setLink(program.link || "");
+      setLinkRef(program.linkRef || "");
+    });
+  }, [editing, id]);
+
   const createProgram = async (event) => {
     event.preventDefault();
     setBusy(true);
     setStatus("");
-    const result = await programFirebaseService.createProgram({ name, startDate, endDate, startTime, endTime, description, link, linkRef });
+    const fields = { name, startDate, endDate, startTime, endTime, description, link, linkRef };
+    const result = editing ? await programFirebaseService.updateProgram(id, fields) : await programFirebaseService.createProgram(fields);
     setBusy(false);
 
     if (!result.success) {
@@ -36,7 +61,7 @@ export function AdminProgramPage() {
       <div className="admin-heading">
         <div>
           <span className="eyebrow">Admin</span>
-          <h1>Add program</h1>
+          <h1>{editing ? "Edit program" : "Add program"}</h1>
         </div>
         <Link className="secondary-btn admin-back" to="/admin/programs">
           All programs
@@ -93,7 +118,11 @@ export function AdminProgramPage() {
         />
 
         <button className="generate" type="submit" disabled={busy}>
-          {busy ? "Adding..." : "Add program"}
+          {busy ?
+            "Saving..."
+          : editing ?
+            "Save changes"
+          : "Add program"}
         </button>
       </form>
 

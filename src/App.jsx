@@ -21,6 +21,7 @@ export function App() {
           <Route path="link/:slug" element={<AdminLinkPage />} />
           <Route path="programs" element={<AdminProgramsPage />} />
           <Route path="program" element={<AdminProgramPage />} />
+          <Route path="program/:id" element={<AdminProgramPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

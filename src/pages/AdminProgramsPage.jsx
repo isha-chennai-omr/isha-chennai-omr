@@ -27,6 +27,20 @@ export function AdminProgramsPage() {
     loadPrograms();
   }, []);
 
+  const deleteProgram = async (program) => {
+    if (!window.confirm(`Delete the program "${program.name}"?`)) return;
+
+    setStatus("Deleting program...");
+    const result = await programFirebaseService.deleteProgram(program.id);
+    if (!result.success) {
+      setStatus(result.error);
+      return;
+    }
+
+    setPrograms((current) => current.filter((item) => item.id !== program.id));
+    setStatus("Program deleted.");
+  };
+
   return (
     <section className="panel admin-panel">
       <div className="admin-heading">
@@ -50,12 +64,19 @@ export function AdminProgramsPage() {
           <article className="program-admin-row" key={program.id}>
             <div>
               <strong>{program.name}</strong>
-              {program.description && <p>{program.description}</p>}
             </div>
             <time dateTime={program.startDate || program.date}>
               {formatDate(program.startDate || program.date)} {program.startTime || ""} - {formatDate(program.endDate || program.date)}{" "}
               {program.endTime || ""}
             </time>
+            <div className="program-admin-actions">
+              <Link className="link-row-button" to={`/admin/program/${encodeURIComponent(program.id)}`}>
+                Edit
+              </Link>
+              <button className="link-row-button link-row-delete" onClick={() => deleteProgram(program)}>
+                Delete
+              </button>
+            </div>
           </article>
         ))}
       </div>

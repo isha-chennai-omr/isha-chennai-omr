@@ -195,6 +195,30 @@ export class LinkFirebaseService {
       return { success: false, error: err.message || "Failed to update link." };
     }
   }
+
+  async deleteLink(slug) {
+    const clean = String(slug || "").trim();
+
+    try {
+      const linkRef = doc(this.db, this.linkCollection, clean);
+      const snapshot = await getDoc(linkRef);
+      if (!snapshot.exists()) {
+        return { success: false, error: "Link not found." };
+      }
+
+      const batch = writeBatch(this.db);
+      const link = snapshot.data();
+      batch.delete(linkRef);
+      if (link.imageRef) {
+        batch.delete(doc(this.db, this.imageCollection, link.imageRef));
+      }
+      await batch.commit();
+      return { success: true, error: null };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message || "Failed to delete link." };
+    }
+  }
 }
 
 const linkFirebaseService = new LinkFirebaseService();

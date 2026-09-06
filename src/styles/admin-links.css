@@ -27,6 +27,51 @@
   white-space: nowrap;
 }
 
+.link-row-public {
+  display: block;
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--earth);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.link-row-public:hover {
+  text-decoration: underline;
+}
+
+.link-row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.link-row-button {
+  padding: 7px 10px;
+  color: var(--earth);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-row-button:hover {
+  border-color: var(--earth);
+}
+
+.link-row-button.link-row-delete {
+  color: #a33f35;
+}
+
 .link-row .link-row-arrow {
   color: var(--earth);
   font-weight: 700;
@@ -37,8 +82,18 @@
     grid-template-columns: 1fr auto;
   }
 
-  .link-row span:not(.link-row-arrow) {
+  .link-row > span {
     grid-column: 1 / -1;
     grid-row: 2;
+  }
+
+  .link-row-actions {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    flex-wrap: wrap;
+  }
+
+  .link-row-public {
+    grid-row: 4;
   }
 }
