@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY);
+const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_PUBLISHABLE_KEY);
 
 function escapeHtml(value) {
   return String(value ?? "")
