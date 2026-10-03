@@ -109,7 +109,7 @@ class LinkSupabaseService {
     }
   }
 
-  async generateLink({ slug, landingUrl, file }) {
+  async generateLink({ slug, description, landingUrl, file }) {
     const clean = String(slug || "").trim();
 
     if (!navigator.onLine) {
@@ -172,6 +172,7 @@ class LinkSupabaseService {
       const { error } = await supabase.from(this.linkTable).insert({
         slug: clean,
         name: clean,
+        description: String(description || "").trim(),
         landing_url: landingUrl.toString(),
         image_path: image.path,
       });
@@ -232,6 +233,7 @@ class LinkSupabaseService {
           id: data.slug,
           slug: data.slug,
           name: data.name,
+          description: data.description || "",
           link: data.landing_url,
           landingUrl: data.landing_url,
           imagePath: data.image_path,
@@ -265,6 +267,7 @@ class LinkSupabaseService {
         id: row.slug,
         slug: row.slug,
         name: row.name,
+        description: row.description || "",
         link: row.landing_url,
         landingUrl: row.landing_url,
         imagePath: row.image_path,
@@ -288,7 +291,7 @@ class LinkSupabaseService {
     }
   }
 
-  async updateLink({ slug, name, landingUrl, file }) {
+  async updateLink({ slug, name, description, landingUrl, file }) {
     const clean = String(slug || "").trim();
     const newName = String(name || "").trim();
 
@@ -363,6 +366,7 @@ class LinkSupabaseService {
         .update({
           slug: newName,
           name: newName,
+          description: String(description || "").trim(),
           landing_url: target.toString(),
           image_path: imagePath,
           updated_at: new Date().toISOString(),

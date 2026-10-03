@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       return res.status(400).send("Missing slug");
     }
 
-    const { data: link, error } = await supabase.from("links").select("slug, name, landing_url, image_path").eq("slug", slug).maybeSingle();
+    const { data: link, error } = await supabase.from("links").select("slug, name, description, landing_url, image_path").eq("slug", slug).maybeSingle();
 
     if (error) {
       console.error("Supabase error:", error);
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     }
 
     const title = link.name || slug;
-    const description = link.name || slug;
+    const description = link.description || link.name || slug;
 
     let imageUrl = "";
 

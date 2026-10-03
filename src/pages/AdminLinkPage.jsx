@@ -11,6 +11,7 @@ export function AdminLinkPage() {
   const editing = Boolean(slug);
   const [currentSlug, setCurrentSlug] = useState(slug ? decodeURIComponent(slug) : "");
   const [name, setName] = useState(slug ? decodeURIComponent(slug) : "");
+  const [description, setDescription] = useState("");
   const [landingUrl, setLandingUrl] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
@@ -28,6 +29,7 @@ export function AdminLinkPage() {
         return;
       }
       setName(result.link.name || currentSlug);
+      setDescription(result.link.description || "");
       setLandingUrl(result.link.link || "");
       setPreview(result.imageData);
       setStatus("");
@@ -67,8 +69,8 @@ export function AdminLinkPage() {
     setStatus("");
     const result =
       editing ?
-        await linkService.updateLink({ slug: currentSlug, name: cleanName, landingUrl, file })
-      : await linkService.generateLink({ slug: cleanName, landingUrl, file });
+        await linkService.updateLink({ slug: currentSlug, name: cleanName, description, landingUrl, file })
+      : await linkService.generateLink({ slug: cleanName, description, landingUrl, file });
     setBusy(false);
 
     if (!result.success) {
@@ -101,6 +103,15 @@ export function AdminLinkPage() {
         value={name}
         onChange={(event) => setName(event.target.value.replace(/\s/g, "_"))}
         placeholder="OMR_SEP_Satsang"
+      />
+
+      <label htmlFor="admin-description">Description</label>
+      <textarea
+        id="admin-description"
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+        placeholder="A short description shown when this link is shared."
+        rows={3}
       />
 
       <label htmlFor="admin-url">Landing URL</label>

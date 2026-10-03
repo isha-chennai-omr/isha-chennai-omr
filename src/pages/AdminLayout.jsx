@@ -8,7 +8,7 @@ export function AdminLayout() {
   const logout = async () => {
     try {
       await signOut();
-      navigate("/admin/login", { replace: true });
+      navigate("/login", { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
     }

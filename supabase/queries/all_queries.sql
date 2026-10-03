@@ -3,11 +3,15 @@ create extension if not exists pgcrypto;
 create table public.links (
     slug text primary key,
     name text not null,
+    description text,
     landing_url text not null,
     image_path text,
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now()
 );
+
+-- Run separately on databases where public.links already exists.
+alter table public.links add column if not exists description text;
 
 create table public.programs (
     id uuid primary key default gen_random_uuid(),
