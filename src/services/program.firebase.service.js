@@ -5,7 +5,7 @@ import commonUtil from "../utils/common-util";
 
 const programCollection = "programs";
 
-class ProgramFirebaseService {
+class programService {
   async listPrograms() {
     try {
       const snapshot = await getDocs(collection(db, programCollection));
@@ -131,5 +131,5 @@ class ProgramFirebaseService {
   }
 }
 
-const programFirebaseService = new ProgramFirebaseService();
-export default programFirebaseService;
+const programService = new programService();
+export default programService;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import programFirebaseService from "../services/program.firebase.service";
+import programService from "../services/program.supabase.service";
 
 export function AdminProgramPage() {
   const { id } = useParams();
@@ -22,7 +22,7 @@ export function AdminProgramPage() {
     if (!editing) return;
 
     setBusy(true);
-    programFirebaseService.getProgram(id).then((result) => {
+    programService.getProgram(id).then((result) => {
       setBusy(false);
       if (!result.success) {
         setStatus(result.error);
@@ -45,7 +45,7 @@ export function AdminProgramPage() {
     setBusy(true);
     setStatus("");
     const fields = { name, startDate, endDate, startTime, endTime, description, link, linkRef };
-    const result = editing ? await programFirebaseService.updateProgram(id, fields) : await programFirebaseService.createProgram(fields);
+    const result = editing ? await programService.updateProgram(id, fields) : await programService.createProgram(fields);
     setBusy(false);
 
     if (!result.success) {

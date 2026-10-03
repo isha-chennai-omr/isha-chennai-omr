@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import commonUtil from "../utils/common-util";
 import fileUtil from "../utils/file-util";
 
-export class LinkFirebaseService {
+export class linkService {
   constructor() {
     this.db = db;
     this.linkCollection = "links";
@@ -221,5 +221,5 @@ export class LinkFirebaseService {
   }
 }
 
-const linkFirebaseService = new LinkFirebaseService();
-export default linkFirebaseService;
+const linkService = new linkService();
+export default linkService;

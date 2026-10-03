@@ -8,7 +8,8 @@ export default defineConfig({
     strictPort: false,
   },
   build: {
-    outDir: 'dist',
+    outDir: "dist",
     sourcemap: true,
   },
-})
+  envDir: ".env/",
+});

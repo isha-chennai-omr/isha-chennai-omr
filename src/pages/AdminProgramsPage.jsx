@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import programFirebaseService from "../services/program.firebase.service";
+import programService from "../services/program.supabase.service";
 
 function formatDate(date) {
   if (!date) return "";
@@ -14,7 +14,7 @@ export function AdminProgramsPage() {
 
   const loadPrograms = async () => {
     setStatus("Loading programs...");
-    const result = await programFirebaseService.listPrograms();
+    const result = await programService.listPrograms();
     if (!result.success) {
       setStatus(result.error);
       return;
@@ -31,7 +31,7 @@ export function AdminProgramsPage() {
     if (!window.confirm(`Delete the program "${program.name}"?`)) return;
 
     setStatus("Deleting program...");
-    const result = await programFirebaseService.deleteProgram(program.id);
+    const result = await programService.deleteProgram(program.id);
     if (!result.success) {
       setStatus(result.error);
       return;

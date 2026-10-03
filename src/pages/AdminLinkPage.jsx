@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import linkFirebaseService from "../services/link.firebase.service";
+import linkService from "../services/link.supabase.service";
 import commonUtil from "../utils/common-util";
 import fileUtil from "../utils/file-util";
 
@@ -21,7 +21,7 @@ export function AdminLinkPage() {
     if (!editing) return;
 
     async function loadLink() {
-      const result = await linkFirebaseService.getLink(currentSlug);
+      const result = await linkService.getLink(currentSlug);
       setBusy(false);
       if (!result.success) {
         setStatus(result.error);
@@ -67,8 +67,8 @@ export function AdminLinkPage() {
     setStatus("");
     const result =
       editing ?
-        await linkFirebaseService.updateLink({ slug: currentSlug, name: cleanName, landingUrl, file })
-      : await linkFirebaseService.generateLink({ slug: cleanName, landingUrl, file });
+        await linkService.updateLink({ slug: currentSlug, name: cleanName, landingUrl, file })
+      : await linkService.generateLink({ slug: cleanName, landingUrl, file });
     setBusy(false);
 
     if (!result.success) {

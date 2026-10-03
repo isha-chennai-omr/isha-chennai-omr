@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import programFirebaseService from "../services/program.firebase.service";
+import programService from "../services/program.supabase.service";
 
 function formatProgramDate(date) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(`${date}T00:00:00`));
@@ -26,7 +26,7 @@ export function HomePage() {
   const [programs, setPrograms] = useState([]);
 
   useEffect(() => {
-    programFirebaseService.listPrograms().then((result) => {
+    programService.listPrograms().then((result) => {
       if (result.success) {
         setPrograms(result.programs.filter(isUpcomingProgram));
       }

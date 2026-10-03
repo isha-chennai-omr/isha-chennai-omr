@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import linkFirebaseService from "../services/link.firebase.service";
+import linkService from "../services/link.supabase.service";
 
 export function AdminPage() {
   const [links, setLinks] = useState([]);
@@ -10,7 +10,7 @@ export function AdminPage() {
 
   const loadLinks = async () => {
     setStatus("Loading links...");
-    const result = await linkFirebaseService.listLinks();
+    const result = await linkService.listLinks();
     if (!result.success) {
       setStatus(result.error);
       return;
@@ -38,7 +38,7 @@ export function AdminPage() {
     if (!window.confirm(`Delete the link "${slug}"?`)) return;
 
     setStatus("Deleting link...");
-    const result = await linkFirebaseService.deleteLink(slug);
+    const result = await linkService.deleteLink(slug);
     if (!result.success) {
       setStatus(result.error);
       return;
