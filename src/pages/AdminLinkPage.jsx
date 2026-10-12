@@ -11,6 +11,7 @@ export function AdminLinkPage() {
   const editing = Boolean(slug);
   const [currentSlug, setCurrentSlug] = useState(slug ? decodeURIComponent(slug) : "");
   const [name, setName] = useState(slug ? decodeURIComponent(slug) : "");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [landingUrl, setLandingUrl] = useState("");
   const [file, setFile] = useState(null);
@@ -29,6 +30,7 @@ export function AdminLinkPage() {
         return;
       }
       setName(result.link.name || currentSlug);
+      setTitle(result.link.title || "");
       setDescription(result.link.description || "");
       setLandingUrl(result.link.link || "");
       setPreview(result.imageData);
@@ -52,8 +54,13 @@ export function AdminLinkPage() {
 
   const save = async () => {
     const cleanName = name.trim();
+    const cleanTitle = title.trim();
     if (!commonUtil.slugIsValid(cleanName)) {
       setStatus("Use 3–64 characters: letters, numbers, _ or -.");
+      return;
+    }
+    if (!cleanTitle) {
+      setStatus("Enter a title for the WhatsApp preview.");
       return;
     }
     if (!commonUtil.validateUrl(landingUrl)) {
@@ -69,8 +76,8 @@ export function AdminLinkPage() {
     setStatus("");
     const result =
       editing ?
-        await linkService.updateLink({ slug: currentSlug, name: cleanName, description, landingUrl, file })
-      : await linkService.generateLink({ slug: cleanName, description, landingUrl, file });
+        await linkService.updateLink({ slug: currentSlug, name: cleanName, title: cleanTitle, description, landingUrl, file })
+      : await linkService.generateLink({ slug: cleanName, title: cleanTitle, description, landingUrl, file });
     setBusy(false);
 
     if (!result.success) {
@@ -103,6 +110,14 @@ export function AdminLinkPage() {
         value={name}
         onChange={(event) => setName(event.target.value.replace(/\s/g, "_"))}
         placeholder="OMR_SEP_Satsang"
+      />
+
+      <label htmlFor="admin-title">Preview title</label>
+      <input
+        id="admin-title"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        placeholder="Inner Engineering Program at Isha OMR"
       />
 
       <label htmlFor="admin-description">Description</label>

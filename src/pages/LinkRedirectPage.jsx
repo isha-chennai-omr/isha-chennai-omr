@@ -9,7 +9,8 @@ export function LinkRedirectPage() {
 
   const [message, setMessage] = useState("Loading preview...");
   const [imageUrl, setImageUrl] = useState("");
-  const [linkName, setLinkName] = useState("");
+  const [linkTitle, setLinkTitle] = useState("");
+  const [linkDescription, setLinkDescription] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -20,7 +21,7 @@ export function LinkRedirectPage() {
 
         const { data: link, error } = await supabase
           .from("links")
-          .select("slug, name, landing_url, image_path")
+          .select("slug, name, title, description, landing_url, image_path")
           .eq("slug", cleanSlug)
           .maybeSingle();
 
@@ -53,17 +54,15 @@ export function LinkRedirectPage() {
         }
 
         if (active) {
+          const previewTitle = link.title || link.name || cleanSlug;
+
           setImageUrl(previewImageUrl);
-          setLinkName(link.name || cleanSlug);
+          setLinkTitle(previewTitle);
+          setLinkDescription(link.description || "");
           setMessage("Opening link...");
         }
 
-        window.setTimeout(
-          () => {
-            window.location.replace(landingUrl);
-          },
-          previewImageUrl ? 1200 : 0,
-        );
+        window.location.replace(landingUrl);
       } catch (error) {
         console.error("Failed to load link:", error);
 
@@ -82,23 +81,23 @@ export function LinkRedirectPage() {
 
   return (
     <main className="redirect-page">
-      {linkName && (
+      {linkTitle && (
         <Helmet>
-          <title>ISHA OMR - {linkName}</title>
+          <title>ISHA OMR - {linkTitle}</title>
 
-          <meta name="description" content={linkName} />
+          <meta name="description" content={linkDescription} />
 
           <meta property="og:type" content="website" />
 
-          <meta property="og:title" content={linkName} />
+          <meta property="og:title" content={linkTitle} />
 
-          <meta property="og:description" content={linkName} />
+          <meta property="og:description" content={linkDescription} />
 
           {imageUrl && <meta property="og:image" content={imageUrl} />}
 
           <meta name="twitter:card" content="summary_large_image" />
 
-          <meta name="twitter:title" content={linkName} />
+          <meta name="twitter:title" content={linkTitle} />
 
           {imageUrl && <meta name="twitter:image" content={imageUrl} />}
         </Helmet>

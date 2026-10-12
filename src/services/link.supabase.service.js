@@ -109,8 +109,9 @@ class LinkSupabaseService {
     }
   }
 
-  async generateLink({ slug, description, landingUrl, file }) {
+  async generateLink({ slug, title, description, landingUrl, file }) {
     const clean = String(slug || "").trim();
+    const cleanTitle = String(title || "").trim();
 
     if (!navigator.onLine) {
       return {
@@ -125,6 +126,14 @@ class LinkSupabaseService {
         success: false,
         url: null,
         error: "Use 3–64 characters: letters, numbers, _ or -.",
+      };
+    }
+
+    if (!cleanTitle) {
+      return {
+        success: false,
+        url: null,
+        error: "Enter a title for the WhatsApp preview.",
       };
     }
 
@@ -172,6 +181,7 @@ class LinkSupabaseService {
       const { error } = await supabase.from(this.linkTable).insert({
         slug: clean,
         name: clean,
+        title: cleanTitle,
         description: String(description || "").trim(),
         landing_url: landingUrl.toString(),
         image_path: image.path,
@@ -233,6 +243,7 @@ class LinkSupabaseService {
           id: data.slug,
           slug: data.slug,
           name: data.name,
+          title: data.title || "",
           description: data.description || "",
           link: data.landing_url,
           landingUrl: data.landing_url,
@@ -267,6 +278,7 @@ class LinkSupabaseService {
         id: row.slug,
         slug: row.slug,
         name: row.name,
+        title: row.title || "",
         description: row.description || "",
         link: row.landing_url,
         landingUrl: row.landing_url,
@@ -291,14 +303,22 @@ class LinkSupabaseService {
     }
   }
 
-  async updateLink({ slug, name, description, landingUrl, file }) {
+  async updateLink({ slug, name, title, description, landingUrl, file }) {
     const clean = String(slug || "").trim();
     const newName = String(name || "").trim();
+    const cleanTitle = String(title || "").trim();
 
     if (!commonUtil.slugIsValid(newName)) {
       return {
         success: false,
         error: "Use 3–64 characters: letters, numbers, _ or -.",
+      };
+    }
+
+    if (!cleanTitle) {
+      return {
+        success: false,
+        error: "Enter a title for the WhatsApp preview.",
       };
     }
 
@@ -366,6 +386,7 @@ class LinkSupabaseService {
         .update({
           slug: newName,
           name: newName,
+          title: cleanTitle,
           description: String(description || "").trim(),
           landing_url: target.toString(),
           image_path: imagePath,

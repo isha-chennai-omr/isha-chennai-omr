@@ -23,7 +23,11 @@ export default async function handler(req, res) {
       return res.status(400).send("Missing slug");
     }
 
-    const { data: link, error } = await supabase.from("links").select("slug, name, description, landing_url, image_path").eq("slug", slug).maybeSingle();
+    const { data: link, error } = await supabase
+      .from("links")
+      .select("slug, name, title, description, landing_url, image_path")
+      .eq("slug", slug)
+      .maybeSingle();
 
     if (error) {
       console.error("Supabase error:", error);
@@ -34,8 +38,8 @@ export default async function handler(req, res) {
       return res.status(404).send("Link not found");
     }
 
-    const title = link.name || slug;
-    const description = link.description || link.name || slug;
+    const title = link.title || link.name || slug;
+    const description = link.description || "";
 
     let imageUrl = "";
 
@@ -56,7 +60,8 @@ export default async function handler(req, res) {
 
     const previewUrl = `${protocol}://${host}/p/${encodeURIComponent(slug)}`;
 
-    const safeTitle = escapeHtml(`ISHA OMR - ${title}`);
+    const safePageTitle = escapeHtml(`ISHA OMR - ${title}`);
+    const safeTitle = escapeHtml(title);
     const safeDescription = escapeHtml(description);
     const safeImageUrl = escapeAttribute(imageUrl);
     const safePreviewUrl = escapeAttribute(previewUrl);
@@ -72,7 +77,7 @@ export default async function handler(req, res) {
 <head>
   <meta charset="UTF-8" />
 
-  <title>${safeTitle}</title>
+  <title>${safePageTitle}</title>
 
   <meta
     name="description"
@@ -136,9 +141,7 @@ export default async function handler(req, res) {
   </main>
 
   <script>
-    setTimeout(function () {
-      window.location.replace(${safeLandingUrl});
-    }, 1200);
+    window.location.replace(${safeLandingUrl});
   </script>
 </body>
 </html>

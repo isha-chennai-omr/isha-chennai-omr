@@ -69,7 +69,7 @@ export function AdminPage() {
       <div className="link-list">
         {links.map((link) => (
           <div className="link-row" key={link.id}>
-            <strong>{link.name || link.id}</strong>
+            <strong>{link.title || link.name || link.id}</strong>
             <span>{link.link || "No destination"}</span>
             <div className="link-row-actions">
               <Link className="link-row-button" to={`/admin/link/${encodeURIComponent(link.id)}`}>
