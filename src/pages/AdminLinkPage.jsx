@@ -89,7 +89,13 @@ export function AdminLinkPage() {
       navigate(`/admin/link/${encodeURIComponent(cleanName)}`, { replace: true });
       setCurrentSlug(cleanName);
     }
-    setStatus(editing ? "Link updated successfully." : "Link created successfully.");
+
+    if (!editing) {
+      navigate("/admin/links");
+      return;
+    }
+
+    setStatus("Link updated successfully.");
   };
 
   return (

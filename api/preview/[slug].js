@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(process.env.VITE_SUPABASE_PROJECT_URL, process.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+const faviconPath = "/favicon.ico?v=2";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -66,6 +67,7 @@ export default async function handler(req, res) {
     const safeImageUrl = escapeAttribute(imageUrl);
     const safePreviewUrl = escapeAttribute(previewUrl);
     const safeLandingUrl = JSON.stringify(landingUrl.toString());
+    const safeFaviconUrl = escapeAttribute(`${protocol}://${host}${faviconPath}`);
 
     res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
 
@@ -78,6 +80,8 @@ export default async function handler(req, res) {
   <meta charset="UTF-8" />
 
   <title>${safePageTitle}</title>
+  <link rel="icon" type="image/vnd.microsoft.icon" href="${safeFaviconUrl}" />
+  <link rel="shortcut icon" href="${safeFaviconUrl}" />
 
   <meta
     name="description"

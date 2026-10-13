@@ -7,7 +7,8 @@ import { supabase } from "../supabase";
 export function LinkRedirectPage() {
   const { slug } = useParams();
 
-  const [message, setMessage] = useState("Loading preview...");
+  const [loading, setLoading] = useState(false);
+
   const [imageUrl, setImageUrl] = useState("");
   const [linkTitle, setLinkTitle] = useState("");
   const [linkDescription, setLinkDescription] = useState("");
@@ -59,7 +60,7 @@ export function LinkRedirectPage() {
           setImageUrl(previewImageUrl);
           setLinkTitle(previewTitle);
           setLinkDescription(link.description || "");
-          setMessage("Opening link...");
+          setLoading(true);
         }
 
         window.location.replace(landingUrl);
@@ -88,25 +89,18 @@ export function LinkRedirectPage() {
           <meta name="description" content={linkDescription} />
 
           <meta property="og:type" content="website" />
-
           <meta property="og:title" content={linkTitle} />
-
           <meta property="og:description" content={linkDescription} />
-
           {imageUrl && <meta property="og:image" content={imageUrl} />}
 
           <meta name="twitter:card" content="summary_large_image" />
-
           <meta name="twitter:title" content={linkTitle} />
-
           {imageUrl && <meta name="twitter:image" content={imageUrl} />}
         </Helmet>
       )}
 
       <section className="redirect-panel">
-        {imageUrl && <img className="redirect-image" src={imageUrl} alt="Preview" />}
-
-        <p>{message}</p>
+        {loading && <span className="redirect-loader" aria-label="Opening link" />}
       </section>
     </main>
   );
