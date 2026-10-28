@@ -78,6 +78,7 @@ export default async function handler(req, res) {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0;url=${safeLandingUrl}" />
 
   <title>${safePageTitle}</title>
   <link rel="icon" type="image/vnd.microsoft.icon" href="${safeFaviconUrl}" />
@@ -130,24 +131,116 @@ export default async function handler(req, res) {
 </head>
 
 <body>
-  <main style="text-align:center;font-family:sans-serif;">
-    ${
-      imageUrl ?
-        `<img
-            src="${safeImageUrl}"
-            alt="${safeDescription}"
-            style="max-width:100%;height:auto;"
-          />`
-      : ""
-    }
+  <main class="loader-container">
+    <div class="loader-content">
+      <div class="loader-logo">✦</div>
 
-    <p>Opening link...</p>
+      <h2>Getting things ready...</h2>
+      <p>Please wait while we redirect you.</p>
+
+      <div class="progress-track">
+        <div class="progress-bar"></div>
+      </div>
+
+      <span class="loading-text">Redirecting...</span>
+    </div>
   </main>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fffdf5, #f7f0df);
+    }
+
+    .loader-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .loader-content {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .loader-logo {
+      font-size: 48px;
+      color: #b68a35;
+      margin-bottom: 20px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    h2 {
+      color: #292929;
+      font-size: 22px;
+      margin: 0 0 10px;
+    }
+
+    p {
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: #e7dfce;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 35%;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #b68a35, #e8c66b);
+      animation: loading 1.2s ease-in-out infinite;
+    }
+
+    .loading-text {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 12px;
+      color: #9b7b39;
+      letter-spacing: 1px;
+    }
+
+    @keyframes loading {
+      0% {
+        transform: translateX(-120%);
+      }
+      100% {
+        transform: translateX(350%);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.65;
+        transform: scale(0.95);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+    }
+  </style>
+
   <script>
-    window.location.replace(${safeLandingUrl});
+    location.replace(${safeLandingUrl});
   </script>
 </body>
+
 </html>
     `);
   } catch (error) {
