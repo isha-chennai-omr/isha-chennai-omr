@@ -151,22 +151,39 @@ export default async function handler(req, res) {
       box-sizing: border-box;
     }
 
+    html,
     body {
+      width: 100%;
+      height: 100%;
       margin: 0;
+      padding: 0;
+    }
+    
+    body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #fffdf5, #f7f0df);
     }
-
+    
     .loader-container {
-      min-height: 100vh;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+    
       display: flex;
       align-items: center;
       justify-content: center;
+    
       padding: 24px;
       text-align: center;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #fffdf5, #f7f0df);
+      z-index: 9999;
     }
-
+    
     .loader-content {
       width: 100%;
       max-width: 360px;
